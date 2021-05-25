@@ -9,7 +9,7 @@ class Products with ChangeNotifier {
       description: 'A red shirt - it is pretty red!',
       price: 29.99,
       imageUrl:
-      'https://cdn.pixabay.com/photo/2016/10/02/22/17/red-t-shirt-1710578_1280.jpg',
+          'https://cdn.pixabay.com/photo/2016/10/02/22/17/red-t-shirt-1710578_1280.jpg',
     ),
     Product(
       id: 'p2',
@@ -17,7 +17,7 @@ class Products with ChangeNotifier {
       description: 'A nice pair of trousers.',
       price: 59.99,
       imageUrl:
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Trousers%2C_dress_%28AM_1960.022-8%29.jpg/512px-Trousers%2C_dress_%28AM_1960.022-8%29.jpg',
+          'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Trousers%2C_dress_%28AM_1960.022-8%29.jpg/512px-Trousers%2C_dress_%28AM_1960.022-8%29.jpg',
     ),
     Product(
       id: 'p3',
@@ -25,7 +25,7 @@ class Products with ChangeNotifier {
       description: 'Warm and cozy - exactly what you need for the winter.',
       price: 19.99,
       imageUrl:
-      'https://live.staticflickr.com/4043/4438260868_cc79b3369d_z.jpg',
+          'https://live.staticflickr.com/4043/4438260868_cc79b3369d_z.jpg',
     ),
     Product(
       id: 'p4',
@@ -33,35 +33,51 @@ class Products with ChangeNotifier {
       description: 'Prepare any meal you want.',
       price: 49.99,
       imageUrl:
-      'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Cast-Iron-Pan.jpg/1024px-Cast-Iron-Pan.jpg',
+          'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Cast-Iron-Pan.jpg/1024px-Cast-Iron-Pan.jpg',
     ),
   ];
 
   var _showFavourites = false;
 
-  Product findById(String id){
+  Product findById(String id) {
     return _products.firstWhere((element) => element.id == id);
   }
 
   List<Product> get products {
-    if(_showFavourites)
+    if (_showFavourites)
       return _products.where((element) => element.isFavourite).toList();
     return [..._products];
   }
 
-  void showFavouritesOnly(){
+  void showFavouritesOnly() {
     _showFavourites = true;
     notifyListeners();
   }
 
-  void showAll(){
+  void showAll() {
     _showFavourites = false;
     notifyListeners();
   }
 
-  void addProduct(Product product){
-    final newProduct = Product(id: DateTime.now().toString(), title: product.title, description: product.description, price: product.price, imageUrl: product.imageUrl);
+  void addProduct(Product product) {
+    final newProduct = Product(
+        id: DateTime.now().toString(),
+        title: product.title,
+        description: product.description,
+        price: product.price,
+        imageUrl: product.imageUrl);
     _products.add(newProduct);
+    notifyListeners();
+  }
+
+  void updateProduct(String id, Product product) {
+    final prodIndex = _products.indexWhere((element) => element.id == id);
+    if (prodIndex >= 0) _products[prodIndex] = product;
+    notifyListeners();
+  }
+
+  void deleteProduct(String id){
+    _products.removeWhere((element) => element.id == id);
     notifyListeners();
   }
 }
