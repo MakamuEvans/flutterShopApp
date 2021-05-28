@@ -9,7 +9,27 @@ import 'package:shop_app/widgets/products_grid.dart';
 
 enum FilterOptions { Favourites, All }
 
-class ProductsOverviewScreen extends StatelessWidget {
+class ProductsOverviewScreen extends StatefulWidget {
+  @override
+  _ProductsOverviewScreenState createState() => _ProductsOverviewScreenState();
+}
+
+class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
+  var _isLoading = false;
+
+  @override
+  void initState() {
+    setState(() {
+      _isLoading = true;
+    });
+    Provider.of<Products>(context, listen: false).fetchProducts().then((value) {
+      setState(() {
+        _isLoading = false;
+      });
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final productsContainer = Provider.of<Products>(context, listen: false);
@@ -30,8 +50,13 @@ class ProductsOverviewScreen extends StatelessWidget {
             builder: (_, cartData, child) =>
                 Badge(child: child, value: cartData.itemCount.toString()),
             child: IconButton(
-              icon: Icon(Icons.shopping_cart, color: Theme.of(context).accentColor,),
-              onPressed: () {Navigator.of(context).pushNamed(CartScreen.routeName);},
+              icon: Icon(
+                Icons.shopping_cart,
+                color: Theme.of(context).accentColor,
+              ),
+              onPressed: () {
+                Navigator.of(context).pushNamed(CartScreen.routeName);
+              },
             ),
           ),
           PopupMenuButton(
@@ -56,7 +81,7 @@ class ProductsOverviewScreen extends StatelessWidget {
         ],
       ),
       drawer: AppDrawer(),
-      body: ProductsGrid(),
+      body: _isLoading ? Center(child: CircularProgressIndicator(),) : ProductsGrid(),
     );
   }
 }

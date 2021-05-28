@@ -6,7 +6,7 @@ import 'package:shop_app/providers/product.dart';
 
 class Products with ChangeNotifier {
   List<Product> _products = [
-    Product(
+    /*Product(
       id: 'p1',
       title: 'Red Shirt',
       description: 'A red shirt - it is pretty red!',
@@ -37,7 +37,7 @@ class Products with ChangeNotifier {
       price: 49.99,
       imageUrl:
           'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Cast-Iron-Pan.jpg/1024px-Cast-Iron-Pan.jpg',
-    ),
+    ),*/
   ];
 
   var _showFavourites = false;
@@ -62,19 +62,43 @@ class Products with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addProduct(Product product) {
+  Future<void> fetchProducts() async {
     final url = Uri.parse(
         'https://myshop-c35d9-default-rtdb.firebaseio.com/products.json');
-    return http
-        .post(url,
-            body: json.encode({
-              'title': product.title,
-              'description': product.description,
-              'price': product.price,
-              'imageUrl': product.imageUrl,
-              'isFavourite': product.isFavourite
-            }))
-        .then((response) {
+    try {
+      final response = await http.get(url);
+      final data = json.decode(response.body) as Map<String, dynamic>;
+      final List<Product> loadedProducts = [];
+      data.forEach((key, value) {
+        loadedProducts.add(Product(
+            id: key,
+            title: value['title'],
+            description: value['description'],
+            price: value['price'],
+            isFavourite: value['isFavourite'],
+            imageUrl: value['imageUrl']));
+      });
+      _products = loadedProducts;
+      notifyListeners();
+      print(json.decode(response.body));
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  Future<void> addProduct(Product product) async {
+    final url = Uri.parse(
+        'https://myshop-c35d9-default-rtdb.firebaseio.com/products.json');
+    try {
+      final response = await http.post(url,
+          body: json.encode({
+            'title': product.title,
+            'description': product.description,
+            'price': product.price,
+            'imageUrl': product.imageUrl,
+            'isFavourite': product.isFavourite
+          }));
+
       final newProduct = Product(
           id: json.decode(response.body)['name'],
           title: product.title,
@@ -83,9 +107,9 @@ class Products with ChangeNotifier {
           imageUrl: product.imageUrl);
       _products.add(newProduct);
       notifyListeners();
-    }).catchError((error){
-      throw error;
-    });
+    } catch (error) {
+      //error thrown
+    }
   }
 
   void updateProduct(String id, Product product) {
