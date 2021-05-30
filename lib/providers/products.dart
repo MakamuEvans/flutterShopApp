@@ -67,9 +67,10 @@ class Products with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> fetchProducts() async {
+  Future<void> fetchProducts([bool filterByUser = false]) async {
+    final filterString = filterByUser ? 'orderBy="creatorId"&equalTo="$userId"' : '';
     final url = Uri.parse(
-        'https://myshop-c35d9-default-rtdb.firebaseio.com/products.json?auth=$authToken');
+        'https://myshop-c35d9-default-rtdb.firebaseio.com/products.json?auth=$authToken&$filterString');
     final favouriteUrl = Uri.parse(
         'https://myshop-c35d9-default-rtdb.firebaseio.com/userFavourites/$userId.json?auth=$authToken');
     try {
@@ -107,6 +108,7 @@ class Products with ChangeNotifier {
             'description': product.description,
             'price': product.price,
             'imageUrl': product.imageUrl,
+            'creatorId': userId
           }));
 
       final newProduct = Product(
