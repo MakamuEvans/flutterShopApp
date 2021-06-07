@@ -58,23 +58,19 @@ class Auth with ChangeNotifier {
 
   Future<bool> tryAutoLogin() async {
     final prefs = await SharedPreferences.getInstance();
-    print('position one......');
     if(!prefs.containsKey("userData")){
       return false;
     }
-    print('position two......');
     final extractedUserData = json.decode(prefs.getString("userData"));
     final expiryDate = DateTime.parse(extractedUserData['expiryDate']);
     print(expiryDate.toString());
     if(expiryDate.isBefore(DateTime.now()))
       return false;
-    print('position three......');
     _token = extractedUserData['token'];
     _userId = extractedUserData['userId'];
     _expiryDate = DateTime.parse(extractedUserData['expiryDate']);
     notifyListeners();
     _autoLogout();
-    print("We are hereeeee");
     return true;
   }
 
